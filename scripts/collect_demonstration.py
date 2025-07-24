@@ -193,6 +193,12 @@ def gather_demonstrations_as_hdf5(
     f.close()
 
 
+
+
+
+
+
+
 if __name__ == "__main__":
     # Arguments
     parser = argparse.ArgumentParser()
@@ -232,7 +238,7 @@ if __name__ == "__main__":
         default="OSC_POSE",
         help="Choice of controller. Can be 'IK_POSE' or 'OSC_POSE'",
     )
-    parser.add_argument("--device", type=str, default="spacemouse")
+    parser.add_argument("--device", type=str, default="keyboard")
     parser.add_argument(
         "--pos-sensitivity",
         type=float,
@@ -242,7 +248,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--rot-sensitivity",
         type=float,
-        default=1.0,
+        default=1.5,
         help="How much to scale rotation user inputs",
     )
     parser.add_argument(
@@ -255,15 +261,23 @@ if __name__ == "__main__":
 
     parser.add_argument("--vendor-id", type=int, default=9583)
     parser.add_argument("--product-id", type=int, default=50734)
+    parser.add_argument('-d', '--debug',
+                    action='store_true')  # on/off flag
 
     args = parser.parse_args()
+
+    if args.debug:
+        import debugpy
+        debugpy.listen(5678)
+        print('wait for client')
+        debugpy.wait_for_client()
 
     # Get controller config
     controller_config = load_controller_config(default_controller=args.controller)
 
     # Create argument configuration
     config = {
-        "robots": args.robots,
+        "robots": [args.robots],
         "controller_configs": controller_config,
     }
 
@@ -275,6 +289,7 @@ if __name__ == "__main__":
     problem_name = problem_info["problem_name"]
     domain_name = problem_info["domain_name"]
     language_instruction = problem_info["language_instruction"]
+    print(f'**INSTRUCTION: {language_instruction}')
     if "TwoArm" in problem_name:
         config["env_configuration"] = args.config
     print(language_instruction)
@@ -291,7 +306,7 @@ if __name__ == "__main__":
     )
 
     # Wrap this with visualization wrapper
-    env = VisualizationWrapper(env)
+    # env = VisualizationWrapper(env)
 
     # Grab reference to controller config and convert it to json-encoded string
     env_info = json.dumps(config)
@@ -312,9 +327,9 @@ if __name__ == "__main__":
         device = Keyboard(
             pos_sensitivity=args.pos_sensitivity, rot_sensitivity=args.rot_sensitivity
         )
-        env.viewer.add_keypress_callback("any", device.on_press)
-        env.viewer.add_keyup_callback("any", device.on_release)
-        env.viewer.add_keyrepeat_callback("any", device.on_press)
+        env.viewer.add_keypress_callback(device.on_press)
+        # env.viewer.add_keyup_callback("any", device.on_release)
+        # env.viewer.add_keyrepeat_callback("any", device.on_press)
     elif args.device == "spacemouse":
         from robosuite.devices import SpaceMouse
 

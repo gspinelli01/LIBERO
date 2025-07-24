@@ -70,6 +70,7 @@ class Libero_Floor_Manipulation(BDDLBaseDomain):
                     (ranges[2] + ranges[0]) / 2,
                     (ranges[3] + ranges[1]) / 2,
                 )
+                # print(f'---\n=={object_region_name}:\n{ranges}\n{zone_size}\n{zone_centroid_xy}\n')
                 target_zone = TargetZone(
                     name=object_region_name,
                     rgba=region_dict[object_region_name]["rgba"],
