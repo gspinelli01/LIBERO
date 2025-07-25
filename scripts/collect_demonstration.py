@@ -304,9 +304,11 @@ if __name__ == "__main__":
         reward_shaping=True,
         control_freq=20,
     )
+    # == set seed
+    env.seed(0)
 
     # Wrap this with visualization wrapper
-    # env = VisualizationWrapper(env)
+    env = VisualizationWrapper(env)
 
     # Grab reference to controller config and convert it to json-encoded string
     env_info = json.dumps(config)

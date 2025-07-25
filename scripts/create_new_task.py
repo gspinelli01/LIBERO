@@ -79,25 +79,25 @@ class FloorScene1(InitialSceneTemplates):
                 region_centroid_xy=[0.0, 0.20],
                 region_name=f"{object_2}_left_region",
                 target_name=self.workspace_name,
-                region_half_len=0.05,
+                region_half_len=0.1,
             )
         )
 
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.05, 0.0],
+                region_centroid_xy=[1.5, 0.0],
                 region_name=f"{object_1}_front_region",
                 target_name=self.workspace_name,
-                region_half_len=0.05,
+                region_half_len=1.5,
             )
         )
         
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.05, -0.30],
+                region_centroid_xy=[1.5, -0.30],
                 region_name=f"{container}_front_region",
                 target_name=self.workspace_name,
-                region_half_len=0.05,
+                region_half_len=1.5,
             )
         )
 
