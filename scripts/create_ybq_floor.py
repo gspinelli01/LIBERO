@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 from libero.libero.utils.bddl_generation_utils import (
     get_xy_region_kwargs_list_from_regions_info,
@@ -44,8 +45,8 @@ if args.debug:
 # ==== SCENE DEFINITION
 object_1 = "popcorn"
 object_2 = "cookies"
-object_3 = "red_coffee_mug"
-object_4 = "moka_pot"
+# object_3 = "red_coffee_mug"
+# object_4 = "moka_pot"
 container = "basket"
 fixture_1 = "floor"
 # fixture_2 = "white_cabinet"
@@ -64,8 +65,6 @@ class FloorScene1(InitialSceneTemplates):
         object_num_info = {
             object_1: 1,
             object_2: 1,
-            object_3: 1,
-            object_4: 1,
             container: 1
         }
 
@@ -77,31 +76,39 @@ class FloorScene1(InitialSceneTemplates):
 
     def define_regions(self):
 
+        # region of interest:
+        #   X: [-0.2, 0.2]
+        #   Y: [-0.2, 0.2]
+
+        # regions lenghts:
+        #   init regions: 0.05 half len (0.1)
+        #   left/front/right regions: 0.025 half len (0.05)
+
         # # == LEFT/FRONT regions (5cm?)
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.0, 0.20],
-                region_name=f"{object_2}_left_region",
+                region_centroid_xy=[-0.1, 0.1],
+                region_name=f"{object_2}_left_region",  # cookies
                 target_name=self.workspace_name,
-                region_half_len=0.1,
+                region_half_len=0.05,
             )
         )
 
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.1, 0.0],
-                region_name=f"{object_1}_front_region",
+                region_centroid_xy=[0.15, 0.3],
+                region_name=f"{object_1}_front_region", # popcorn front
                 target_name=self.workspace_name,
-                region_half_len=0.1,
+                region_half_len=0.05,
             )
         )
         
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.1, -0.30],
+                region_centroid_xy=[0.10, -0.20],
                 region_name=f"{container}_front_region",
                 target_name=self.workspace_name,
-                region_half_len=0.1,
+                region_half_len=0.10,
             )
         )
 
@@ -109,46 +116,28 @@ class FloorScene1(InitialSceneTemplates):
 
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.0, 1.0],
+                region_centroid_xy=[0.0, 0.3],
                 region_name=f"{object_1}_init_region",  # popcorn
                 target_name=self.workspace_name,
-                region_half_len=0.2,
+                region_half_len=0.05,
             )
         )
 
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[1.0, 0.0],
+                region_centroid_xy=[-0.1, 0.2],
                 region_name=f"{object_2}_init_region",  # cookies
                 target_name=self.workspace_name,
-                region_half_len=0.2,
+                region_half_len=0.05,
             )
         )
 
         self.regions.update(
             self.get_region_dict(
-                region_centroid_xy=[0.20, 0.50],
-                region_name=f"{object_3}_init_region",
-                target_name=self.workspace_name,
-                region_half_len=0.2,
-            )
-        )
-
-        self.regions.update(
-            self.get_region_dict(
-                region_centroid_xy=[0.20, 0.75],
-                region_name=f"{object_4}_init_region",
-                target_name=self.workspace_name,
-                region_half_len=0.2,
-            )
-        )
-
-        self.regions.update(
-            self.get_region_dict(
-                region_centroid_xy=[0.0, -0.0],
+                region_centroid_xy=[-0.1, -0.2],
                 region_name=f"{container}_init_region",
                 target_name=self.workspace_name,
-                region_half_len=0.2,
+                region_half_len=0.025,
                 yaw_rotation=(np.pi, np.pi),
             )
         )
@@ -217,8 +206,11 @@ def main():
             ("On", f"{object_1}_1", f"{fixture_1}_{container}_front_region"),
         ],
     )
-
-    bddl_file_names, failures = generate_bddl_from_task_info(folder='/tmp/pddl/ybq_tasks')
+    
+    # save generated pddls
+    folder_path = '/tmp/pddl/ybq_tasks'
+    os.makedirs(folder_path, exist_ok=True)
+    bddl_file_names, failures = generate_bddl_from_task_info(folder=folder_path)
     print(bddl_file_names)
 
 

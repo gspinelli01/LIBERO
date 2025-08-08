@@ -74,11 +74,16 @@ class Libero_Floor_Manipulation(BDDLBaseDomain):
                 target_zone = TargetZone(
                     name=object_region_name,
                     rgba=region_dict[object_region_name]["rgba"],
+                    # rgba=[255,0,0,1],
                     zone_size=zone_size,
                     zone_centroid_xy=zone_centroid_xy,
+                    z_offset=0.0,
+                    zone_height=0.007
                 )
                 object_sites_dict[object_region_name] = target_zone
 
+                # mujoco_arena.floor_body.attrib
+                # mujoco_arena.floor_body.items()
                 mujoco_arena.floor_body.append(
                     new_site(
                         name=target_zone.name,

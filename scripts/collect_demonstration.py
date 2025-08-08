@@ -17,7 +17,9 @@ from robosuite.utils.input_utils import input2action
 import libero.libero.envs.bddl_utils as BDDLUtils
 from libero.libero.envs import *
 
+STEPS_AFTER_SUCCESS = 10
 
+ 
 def collect_human_trajectory(
     env, device, arm, env_configuration, problem_info, remove_directory=[]
 ):
@@ -37,6 +39,8 @@ def collect_human_trajectory(
     while not reset_success:
         try:
             env.reset()
+            # == set init state
+            # obs = env.set_init_state(initial_states[episode_idx])
             reset_success = True
         except:
             continue
@@ -89,7 +93,7 @@ def collect_human_trajectory(
             if task_completion_hold_count > 0:
                 task_completion_hold_count -= 1  # latched state, decrement count
             else:
-                task_completion_hold_count = 10  # reset count on first success timestep
+                task_completion_hold_count = STEPS_AFTER_SUCCESS  # reset count on first success timestep
         else:
             task_completion_hold_count = -1  # null the counter if there's no success
 
@@ -303,6 +307,8 @@ if __name__ == "__main__":
         use_camera_obs=False,
         reward_shaping=True,
         control_freq=20,
+        initialization_noise=None,       # remove noise when initializing robot's joint position
+        render_collision_mesh=False
     )
     # == set seed
     env.seed(0)
@@ -347,10 +353,13 @@ if __name__ == "__main__":
         )
 
     # make a new timestamped directory
-    t1, t2 = str(time.time()).split(".")
+    t = time.time()
+    fmt = time.localtime(t)
+    current_time = time.strftime("%m_%d-%H_%M_%S", fmt)
+    # t1, t2 = str(time.time()).split(".")
     new_dir = os.path.join(
         args.directory,
-        f"{domain_name}_ln_{problem_name}_{t1}_{t2}_"
+        f"{domain_name}_ln_{problem_name}_{current_time}_"
         + language_instruction.replace(" ", "_").strip('""'),
     )
 
